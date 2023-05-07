@@ -111,6 +111,7 @@ function generatePrompt(name,company,occasion,role,number,traitOne,traitTwo,like
     Number of years they have been working :${number}.
     Two positive adjectives to describe the person: ${traitOne} and  ${traitTwo}.
     Name of the company:${company}. 
+    The person loves to:${like}.
     End with a positive message or wishes for the person.
     
    
