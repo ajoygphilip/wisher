@@ -15,21 +15,62 @@ export default async function (req, res) {
     return;
   }
 
-  const animal = req.body.animal || '';
-  if (animal.trim().length === 0) {
+  const name = req.body.name || '';
+  const company = req.body.company || '';
+  const occasion = req.body.occasion || '';
+  const number = req.body.number || '';
+  const role = req.body.role || '';
+  const traitOne = req.body.traitOne || '';
+  const traitTwo = req.body.traitTwo || '';
+  const like = req.body.like || '';
+  const temperature = (req.body.temperature/10) || 0.8;
+
+  if (name.trim().length === 0 ) {
     res.status(400).json({
       error: {
-        message: "Please enter a valid animal",
+        message: "Please enter a valid name",
       }
     });
     return;
   }
 
+  if (occasion.length===0 ) {
+    res.status(400).json({
+      error: {
+        message: "Please enter a valid occasion",
+      }
+    });
+    return;
+  }
+
+  if (number<0 ) {
+    res.status(400).json({
+      error: {
+        message: "Please enter a valid year",
+      }
+    });
+    return;
+  }
+
+  if (traitOne=="" || traitTwo=="" ) {
+    res.status(400).json({
+      error: {
+        message: "Please enter valid traitss",
+      }
+    });
+    return;
+  }
+
+
+
   try {
+    console.log(temperature)
+    // console.log("before fetch",name,number,company,occasion,role,traitOne,traitTwo,like)
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: generatePrompt(animal),
-      temperature: 0.6,
+      prompt: generatePrompt(name,company,occasion,role,number,traitOne,traitTwo,like),
+      temperature: temperature,
+      "max_tokens": 250,
     });
     res.status(200).json({ result: completion.data.choices[0].text });
   } catch(error) {
@@ -48,15 +89,31 @@ export default async function (req, res) {
   }
 }
 
-function generatePrompt(animal) {
-  const capitalizedAnimal =
-    animal[0].toUpperCase() + animal.slice(1).toLowerCase();
-  return `Suggest three names for an animal that is a superhero.
+function generatePrompt(name,company,occasion,role,number,traitOne,traitTwo,like) {
+  
+  if(occasion=='birthday'){
+ 
 
-Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
-Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
-Animal: ${capitalizedAnimal}
-Names:`;
+  return `Please write a heartfelt and highly creative birthday wishes.
+   
+  Name of the person:${name}.
+  Two positive adjectives to describe the person: ${traitOne} and  ${traitTwo}.
+  The person loves to:${like}. 
+
+  End with a positive message or wishes for the person.`;
+}
+
+  if(occasion=='work anniversary'){
+    return `Please write  a very creative work anniversary message. Provide the following information:
+    
+    Name of the person:${name}.
+    Role: ${role}.
+    Number of years they have been working :${number}.
+    Two positive adjectives to describe the person: ${traitOne} and  ${traitTwo}.
+    Name of the company:${company}. 
+    End with a positive message or wishes for the person.
+    
+   
+    `;}
+
 }
